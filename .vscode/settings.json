@@ -1,0 +1,10 @@
+{
+    "rust-analyzer.procMacro.ignored": {
+        "yaah": [
+            "aoc",
+            "aoc_lib",
+            "aoc_main",
+            "aoc_year",
+        ]
+    }
+}
