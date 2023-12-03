@@ -1,5 +1,5 @@
-#[yaah::aoc(day3, part1)]
-fn part_one(input: &str) -> u32 {
+#[yaah::aoc(day3, part1, naive)]
+fn naive_part_one(input: &str) -> u32 {
     let symbols: Vec<(usize, usize)> = input
         .lines()
         .enumerate()
@@ -47,6 +47,51 @@ fn part_one(input: &str) -> u32 {
         .sum()
 }
 
+#[yaah::aoc(day3, part1, heapless)]
+fn without_heap(input: &str) -> u32 {
+    let line_width = input.lines().next().expect("no input").len();
+    let sep_width = match input[line_width..].bytes().next() {
+        Some(b'\r') => 2,
+        Some(b'\n') => 1,
+        None => 0, // there's only one line
+        _ => unreachable!(),
+    };
+
+    let numbers = input.lines().enumerate().flat_map(|(y, line)| {
+        line.as_bytes()
+            .split(|b| !b.is_ascii_digit())
+            .filter(|s| !s.is_empty())
+            .map(|bytes| std::str::from_utf8(bytes).expect("invalid utf8"))
+            .map(move |num| {
+                let x_start = unsafe { num.as_ptr().offset_from(line.as_ptr()) as usize };
+                (num, x_start, y)
+            })
+    });
+
+    numbers
+        .map(|(num, x_start, y)| {
+            let (start, count) = match y.checked_sub(1) {
+                Some(start_line) => (start_line * (line_width + sep_width), 3),
+                None => (0, 2),
+            };
+            let region = &input[start..];
+
+            for line in region.lines().take(count) {
+                let mut search = line
+                    .bytes()
+                    .skip(x_start.saturating_sub(2))
+                    .take(num.len() + 2);
+
+                if search.any(|b| b != b'.' && !b.is_ascii_digit()) {
+                    return num.parse().unwrap();
+                }
+            }
+
+            0
+        })
+        .sum()
+}
+
 enum GearAdj {
     None,
     One(u16),
@@ -54,8 +99,8 @@ enum GearAdj {
     TooMany,
 }
 
-#[yaah::aoc(day3, part2)]
-fn part_two(input: &str) -> u32 {
+#[yaah::aoc(day3, part2, naive)]
+fn naive_part_two(input: &str) -> u32 {
     let mut gears: Vec<((usize, usize), GearAdj)> = input
         .lines()
         .enumerate()
