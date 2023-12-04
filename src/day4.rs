@@ -1,21 +1,23 @@
-#[yaah::aoc(day4, part1, naive)]
+#[yaah::aoc(day4, part1)]
 fn part_one(input: &str) -> u32 {
+    let mut winning_numbers: Vec<u32> = Vec::new();
     input
         .lines()
         .map(|line| {
-            let (_card, contents) = line.split_once(':').expect("no card id");
-            let (winning, your_hand) = contents.split_once('|').expect("no winning separator");
+            let (_id, card) = line.split_once(':').expect("no card id");
+            let (winning, your_card) = card.split_once('|').expect("no winning separator");
 
-            let winning: Vec<u32> = winning
-                .split_whitespace()
-                .map(|s| s.parse())
-                .collect::<Result<_, _>>()
-                .expect("invalid winning number");
+            winning_numbers.clear();
+            winning_numbers.extend(
+                winning
+                    .split_whitespace()
+                    .map(|s| s.parse::<u32>().expect("invalid winning number")),
+            );
 
-            let count_winning = your_hand
+            let count_winning = your_card
                 .split_whitespace()
                 .map(|s| s.parse().expect("invalid card number"))
-                .filter(|card| winning.contains(card))
+                .filter(|number| winning_numbers.contains(number))
                 .count() as u32;
 
             match count_winning {
@@ -26,25 +28,27 @@ fn part_one(input: &str) -> u32 {
         .sum()
 }
 
-#[yaah::aoc(day4, part2, naive)]
+#[yaah::aoc(day4, part2)]
 fn part_two(input: &str) -> u32 {
     let count = input.lines().count();
     let mut copies = vec![1; count];
 
+    let mut winning_numbers: Vec<u32> = Vec::new();
     for (current_line, line) in input.lines().enumerate() {
-        let (_card, contents) = line.split_once(':').expect("no card id");
-        let (winning, your_hand) = contents.split_once('|').expect("no winning separator");
+        let (_id, card) = line.split_once(':').expect("no card id");
+        let (winning, your_card) = card.split_once('|').expect("no winning separator");
 
-        let winning: Vec<u32> = winning
-            .split_whitespace()
-            .map(|s| s.parse())
-            .collect::<Result<_, _>>()
-            .expect("invalid winning number");
+        winning_numbers.clear();
+        winning_numbers.extend(
+            winning
+                .split_whitespace()
+                .map(|s| s.parse::<u32>().expect("invalid winning number")),
+        );
 
-        let count_winning = your_hand
+        let count_winning = your_card
             .split_whitespace()
             .map(|s| s.parse().expect("invalid card number"))
-            .filter(|card| winning.contains(card))
+            .filter(|number| winning_numbers.contains(number))
             .count();
 
         let this_card_copies = copies[current_line];
