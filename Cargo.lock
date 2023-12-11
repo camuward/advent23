@@ -1782,8 +1782,7 @@ dependencies = [
 [[package]]
 name = "yaah"
 version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b8bf54143c10513a0b84f92fbdf12f0798d4a96b5428f7f0327263157e187a6"
+source = "git+https://github.com/camuward/yaah#7ae38dea3aa7cc0f002c5853ab4cb42db7be1ca7"
 dependencies = [
  "anyhow",
  "itertools",

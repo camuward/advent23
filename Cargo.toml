@@ -18,3 +18,5 @@ criterion = "0.4"
 name = "aoc-bench"
 harness = false
 
+[patch.crates-io]
+yaah = { git = "https://github.com/camuward/yaah" }
