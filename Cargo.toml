@@ -6,17 +6,24 @@ edition = "2021"
 repository = "https://github.com/username/advent"
 license = "MIT/Apache-2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-yaah = "0.2.2"
-clap = { version = "4.0", features = ["derive"] }
+yaah = { version = "0.2.2", default-features = false }
+clap = { version = "4.0", features = ["derive"], optional = true }
 
-criterion = "0.4"
+criterion = { version = "0.4", optional = true }
+
+[features]
+default = []
+harness = ["clap", "criterion", "yaah/harness"]
+
+[[bin]]
+name = "advent"
+required-features = ["harness"]
 
 [[bench]]
 name = "aoc-bench"
 harness = false
+required-features = ["harness"]
 
 [patch.crates-io]
 yaah = { git = "https://github.com/camuward/yaah" }
