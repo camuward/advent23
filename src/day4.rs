@@ -1,5 +1,7 @@
+use alloc::vec::Vec;
+
 #[yaah::aoc(day4, part1)]
-fn part_one(input: &str) -> u32 {
+pub fn part_one(input: &str) -> u32 {
     let mut winning_numbers: Vec<u32> = Vec::new();
     input
         .lines()
@@ -29,9 +31,9 @@ fn part_one(input: &str) -> u32 {
 }
 
 #[yaah::aoc(day4, part2)]
-fn part_two(input: &str) -> u32 {
+pub fn part_two(input: &str) -> u32 {
     let count = input.lines().count();
-    let mut copies = vec![1; count];
+    let mut copies = alloc::vec![1; count];
 
     let mut winning_numbers: Vec<u32> = Vec::new();
     for (current_line, line) in input.lines().enumerate() {

@@ -1,3 +1,5 @@
+use alloc::vec::Vec;
+
 #[repr(u8, align(2))]
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 enum Hand {
@@ -11,7 +13,7 @@ enum Hand {
 }
 
 impl Hand {
-    fn bid(&self) -> u16 {
+    pub fn bid(&self) -> u16 {
         match self {
             Hand::HighCard(_, bid) => *bid,
             Hand::Pair(_, bid) => *bid,
@@ -25,7 +27,7 @@ impl Hand {
 }
 
 #[yaah::aoc(day7, part1)]
-fn part_one(input: &str) -> u32 {
+pub fn part_one(input: &str) -> u32 {
     let mut hands: Vec<Hand> = input
         .lines()
         .map(|line| (&line.as_bytes()[0..5], &line[6..]))
@@ -74,7 +76,7 @@ fn part_one(input: &str) -> u32 {
 }
 
 #[yaah::aoc(day7, part2)]
-fn part_two(input: &str) -> u32 {
+pub fn part_two(input: &str) -> u32 {
     let mut hands: Vec<Hand> = input
         .lines()
         .map(|line| (&line.as_bytes()[0..5], &line[6..]))

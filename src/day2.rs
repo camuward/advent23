@@ -1,10 +1,10 @@
-fn parse_id(id: &str) -> Option<u32> {
+pub fn parse_id(id: &str) -> Option<u32> {
     let id = id.strip_prefix("Game ")?;
     let id = id.parse().ok()?;
     Some(id)
 }
 
-fn count_per_color(subset: &str) -> [u32; 3] {
+pub fn count_per_color(subset: &str) -> [u32; 3] {
     subset
         .split(", ")
         .fold([0, 0, 0], |[mut r, mut g, mut b], count_color| {
@@ -23,7 +23,7 @@ fn count_per_color(subset: &str) -> [u32; 3] {
 }
 
 #[yaah::aoc(day2, part1)]
-fn part_one(input: &str) -> u32 {
+pub fn part_one(input: &str) -> u32 {
     let possible_games = input.lines().zip(1..).filter_map(|(line, id)| {
         let (_id, set_of_cubes) = line.split_once(": ").expect("no game id");
         debug_assert_eq!(parse_id(_id), Some(id));
@@ -38,7 +38,7 @@ fn part_one(input: &str) -> u32 {
 }
 
 #[yaah::aoc(day2, part2)]
-fn part_two(input: &str) -> u32 {
+pub fn part_two(input: &str) -> u32 {
     let powers = input.lines().map(|line| {
         let (_id, set_of_cubes) = line.split_once(": ").expect("no game id");
 

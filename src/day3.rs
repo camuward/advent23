@@ -1,5 +1,7 @@
 #[yaah::aoc(day3, part1, naive)]
-fn naive_part_one(input: &str) -> u32 {
+pub fn naive_part_one(input: &str) -> u32 {
+    use alloc::vec::Vec;
+
     let symbols: Vec<(usize, usize)> = input
         .lines()
         .enumerate()
@@ -21,7 +23,7 @@ fn naive_part_one(input: &str) -> u32 {
             line.as_bytes()
                 .split(|b| !b.is_ascii_digit())
                 .filter(|s| !s.is_empty())
-                .map(|bytes| std::str::from_utf8(bytes).expect("invalid utf8"))
+                .map(|bytes| core::str::from_utf8(bytes).expect("invalid utf8"))
                 .map(|s| {
                     let num: u32 = s.parse().unwrap();
 
@@ -48,7 +50,7 @@ fn naive_part_one(input: &str) -> u32 {
 }
 
 #[yaah::aoc(day3, part1, heapless)]
-fn without_heap(input: &str) -> u32 {
+pub fn without_heap(input: &str) -> u32 {
     let line_width = input.lines().next().expect("no input").len();
     let sep_width = match input[line_width..].bytes().next() {
         Some(b'\r') => 2,
@@ -61,7 +63,7 @@ fn without_heap(input: &str) -> u32 {
         line.as_bytes()
             .split(|b| !b.is_ascii_digit())
             .filter(|s| !s.is_empty())
-            .map(|bytes| std::str::from_utf8(bytes).expect("invalid utf8"))
+            .map(|bytes| core::str::from_utf8(bytes).expect("invalid utf8"))
             .map(move |num| {
                 let x_start = unsafe { num.as_ptr().offset_from(line.as_ptr()) as usize };
                 (num, x_start, y)
@@ -100,7 +102,9 @@ enum GearAdj {
 }
 
 #[yaah::aoc(day3, part2, naive)]
-fn naive_part_two(input: &str) -> u32 {
+pub fn naive_part_two(input: &str) -> u32 {
+    use alloc::vec::Vec;
+
     let mut gears: Vec<((usize, usize), GearAdj)> = input
         .lines()
         .enumerate()
@@ -120,7 +124,7 @@ fn naive_part_two(input: &str) -> u32 {
             .as_bytes()
             .split(|b| !b.is_ascii_digit())
             .filter(|s| !s.is_empty())
-            .map(|bytes| std::str::from_utf8(bytes).expect("invalid utf8"));
+            .map(|bytes| core::str::from_utf8(bytes).expect("invalid utf8"));
 
         for num in num_strs {
             // SAFETY: s is a substring of line

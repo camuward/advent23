@@ -1,5 +1,5 @@
 #[yaah::aoc(day1, part1)]
-fn part_one(input: &str) -> u32 {
+pub fn part_one(input: &str) -> u32 {
     let first_last_digits = input.lines().map(|line| {
         let first = line.bytes().find(u8::is_ascii_digit);
         let last = line.bytes().rfind(u8::is_ascii_digit);
@@ -9,7 +9,7 @@ fn part_one(input: &str) -> u32 {
 
     let calibration_values = first_last_digits.map(|(first, last)| {
         let num: &[u8] = &[first, last];
-        let num: &str = std::str::from_utf8(num).unwrap();
+        let num: &str = core::str::from_utf8(num).unwrap();
         let num: u8 = num.parse().unwrap();
 
         num as u32
@@ -19,7 +19,7 @@ fn part_one(input: &str) -> u32 {
 }
 
 #[yaah::aoc(day1, part2)]
-fn part_two(input: &str) -> u32 {
+pub fn part_two(input: &str) -> u32 {
     let first_last_digits = input.lines().map(|line| {
         let get_number = |(i, b): (usize, u8)| {
             b.is_ascii_digit()
@@ -46,7 +46,7 @@ fn part_two(input: &str) -> u32 {
 
     let calibration_values = first_last_digits.map(|(first, last)| {
         let num: &[u8] = &[first, last];
-        let num: &str = std::str::from_utf8(num).unwrap();
+        let num: &str = core::str::from_utf8(num).unwrap();
         let num: u8 = num.parse().unwrap();
 
         num as u32

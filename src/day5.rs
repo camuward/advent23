@@ -1,6 +1,6 @@
-use std::ops::Range;
+use core::ops::Range;
 
-fn parse_input(
+pub fn parse_input(
     input: &str,
 ) -> (
     impl Iterator<Item = u64> + '_,
@@ -29,7 +29,7 @@ fn parse_input(
                 .take_while(|s| s.bytes().all(|b| b.is_ascii_digit()))
                 .map(|n| n.parse().unwrap());
 
-            let array_chunks = std::iter::from_fn(move || {
+            let array_chunks = core::iter::from_fn(move || {
                 let dst = numbers.next()?;
                 let (src, len) = numbers
                     .next()
@@ -43,11 +43,11 @@ fn parse_input(
         })
     };
 
-    (seeds, std::iter::from_fn(next_map))
+    (seeds, core::iter::from_fn(next_map))
 }
 
 #[yaah::aoc(day5, part1)]
-fn part_one(input: &str) -> u64 {
+pub fn part_one(input: &str) -> u64 {
     let (seeds, maps) = parse_input(input);
 
     let seeds = seeds.map(|seed| {
@@ -63,19 +63,21 @@ fn part_one(input: &str) -> u64 {
 }
 
 #[yaah::aoc(day5, part2)]
-fn part_two(input: &str) -> u64 {
+pub fn part_two(input: &str) -> u64 {
+    use alloc::vec::Vec;
+
     let (mut seeds, maps) = parse_input(input);
 
     let mut maps: Vec<Vec<(Range<u64>, Range<u64>)>> =
         maps.map(|entries| entries.collect()).collect();
     maps.iter_mut()
         .for_each(|map| map.sort_unstable_by_key(|(src, _)| src.start));
-    let mut ranges: Vec<Range<u64>> = std::iter::from_fn(|| seeds.next().zip(seeds.next()))
+    let mut ranges: Vec<Range<u64>> = core::iter::from_fn(|| seeds.next().zip(seeds.next()))
         .map(|(s, len)| s..s + len)
         .collect();
 
     for map_entries in maps {
-        let mut destinations = vec![];
+        let mut destinations = alloc::vec![];
         for mut range in ranges {
             // source mapping, destination mapping
             for (src, dst) in &map_entries {
