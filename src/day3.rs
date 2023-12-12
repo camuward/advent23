@@ -46,31 +46,32 @@ pub fn part_one(input: &str) -> u32 {
         .sum()
 }
 
-enum GearAdj {
-    None,
-    One(u16),
-    Two(u16, u16),
-    TooMany,
-}
-
-#[yaah::aoc(day3, part2, naive)]
-pub fn naive_part_two(input: &str) -> u32 {
+#[yaah::aoc(day3, part2)]
+pub fn part_two(input: &str) -> u32 {
     use alloc::vec::Vec;
 
-    let mut gears: Vec<((usize, usize), GearAdj)> = input
+    #[derive(Clone, Copy)]
+    enum GearAdj {
+        None,
+        One(u16),
+        Two(u16, u16),
+        TooMany,
+    }
+
+    // scan the input for gears
+    let mut gears: Vec<((u8, u8), GearAdj)> = input
         .lines()
         .enumerate()
         .flat_map(|(y, line)| {
-            line.bytes().enumerate().filter_map(move |(x, b)| {
-                if b == b'*' {
-                    Some(((x, y), GearAdj::None))
-                } else {
-                    None
-                }
-            })
+            line.bytes()
+                .enumerate()
+                .filter(|&(_x, b)| b == b'*')
+                .map(move |(x, _)| (x as u8, y as u8))
         })
+        .zip(core::iter::repeat(GearAdj::None))
         .collect();
 
+    // scan the input for numbers
     for (y, line) in input.lines().enumerate() {
         let num_strs = line
             .as_bytes()
@@ -78,36 +79,47 @@ pub fn naive_part_two(input: &str) -> u32 {
             .filter(|s| !s.is_empty())
             .map(|bytes| core::str::from_utf8(bytes).expect("invalid utf8"));
 
+        // search for a gear around each number
         for num in num_strs {
-            // SAFETY: s is a substring of line
-            let x_start = unsafe { num.as_ptr().offset_from(line.as_ptr()) as usize };
-            let x_end = x_start + num.len();
+            let x_range = {
+                // SAFETY: `num` is a substring of `line`
+                let offset = unsafe { index_in_line(num, line) };
+                let start = offset.saturating_sub(1);
+                let end = offset + num.len();
 
-            let x_range = x_start.saturating_sub(1)..=x_end;
-            let y_range = y.saturating_sub(1)..=y + 1;
+                start as u8..=end as u8
+            };
 
-            if let Some(i) = gears
-                .iter()
-                .position(|((x, y), _)| y_range.contains(y) && x_range.contains(x))
-            {
+            let y_range = {
+                let start = y.saturating_sub(1);
+                let end = y + 1;
+
+                start as u8..=end as u8
+            };
+
+            let in_range = |x, y| y_range.contains(y) && x_range.contains(x);
+            if let Some(i) = gears.iter().position(|((x, y), _)| in_range(x, y)) {
                 let num: u32 = num.parse().unwrap();
 
-                let (_, adj) = &mut gears[i];
-                match adj {
-                    GearAdj::None => *adj = GearAdj::One(num as u16),
-                    GearAdj::One(n) => *adj = GearAdj::Two(*n, num as u16),
-                    GearAdj::Two(_, _) => *adj = GearAdj::TooMany,
+                let (_pos, gear) = &mut gears[i];
+                match gear {
+                    GearAdj::None => *gear = GearAdj::One(num as u16),
+                    GearAdj::One(first) => *gear = GearAdj::Two(*first, num as u16),
+                    GearAdj::Two(_, _) => *gear = GearAdj::TooMany,
                     GearAdj::TooMany => {}
-                }
+                };
             }
         }
     }
 
     gears
         .into_iter()
-        .filter_map(|(_, adj)| match adj {
-            GearAdj::Two(a, b) => Some(a as u32 * b as u32),
-            _ => None,
+        .map(|(_pos, gear)| {
+            let GearAdj::Two(a, b) = gear else {
+                return 0;
+            };
+
+            a as u32 * b as u32
         })
-        .sum::<u32>()
+        .sum()
 }
